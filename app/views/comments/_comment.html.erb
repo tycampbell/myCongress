@@ -1,0 +1,51 @@
+<% type = if comment.bill_id.nil?
+ 		'comment' 
+	elsif not comment.point_id.nil? 
+		'point_comment'
+	else
+		'head_comment'
+	end %>
+
+<div class=<%= type %> id="comment_<%= comment.id %>">
+  	<div id="comment_<%= comment.id %>_text">
+		<p>
+	  		<% if type =='point_comment'%>
+			<b><%= link_to 'Point', bill_path(comment.bill_id)+"#point_#{comment.point_id}"%>: </b>
+			<% end %>
+			<%= comment.text %> 
+		</p>
+  	</div>
+
+	<div class="comment_footer">
+		<%= render :partial => 'comments/comment_info', :object => comment -%>
+		<small>
+		posted <%= time_ago_in_words(comment.created_at)%> ago
+		
+		<div id = "comment_<%= comment.id %>_report" class="logged_in" style="display:none">
+				<%= link_to_remote('report',
+									:update => "comment_#{comment.id}_report",
+									:url => {:action => 'request_report',
+											:id => comment.id} 
+									
+											) %>
+		</div>
+		
+		<% if comment.can_vote %>
+			<div id="logged_in" class="logged_in" style="display:none">
+			<%= link_to_remote ('reply', 
+				:update => "comment_#{comment.id}_reply",
+				:url => { 	:action => 'request_reply', 
+							:id => comment.id,
+							:bill_id => @bill.id })
+				  %>
+			</div>
+		<% end %>
+		</small>
+	</div>
+	<div id="comment_<%= comment.id %>_reply">
+	</div>
+		
+		
+	  <%= render :partial => 'comments/comment', 
+				:collection => comment.children %>
+</div>

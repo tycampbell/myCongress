@@ -1,0 +1,19 @@
+<% if @user.enabled -%>
+
+	<p>
+	  <b>Username:</b>
+	  <%=h @user.username %>
+	</p>
+
+	<p>
+	  <b>Member Since: </b>
+	  <%=h @user.created_at.to_s(:long) %>
+	</p>
+	
+<% else -%>
+
+<p>
+	<b>This account is currently disabled</b>
+</p>
+
+<% end -%>

@@ -1,0 +1,4 @@
+Are you sure? <%= link_to_remote('Yes',
+					:update => "comment_#{report.id}_report",
+					:url => {:action => 'report',
+								:id => report.id} )%>

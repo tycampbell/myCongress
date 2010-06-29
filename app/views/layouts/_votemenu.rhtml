@@ -1,0 +1,29 @@
+Vote By: (Some Date) <br />
+Bill: #<%= votemenu.number%> <br />
+	Votes For: <%= votemenu.pos_votes%> <br /> 
+	Votes Against: <%= (votemenu.total_votes - votemenu.pos_votes )%> <br />
+<br />
+<% if @bill.finished %>
+	(This bill (passed/failed) in Congress and can no longer be voted on)
+	
+<% elsif logged_in_user and !logged_in_user.voted_on?(votemenu) -%>
+
+	<%= link_to_remote "Vote For",
+	:update => 'vote_menu',
+	:url => {:controller => 'bills', :action => 'vote_for', :id => @bill.id},
+	:method => :rjs %><br />
+	<%= link_to_remote "Vote Against",
+	:update => 'vote_menu',
+	:url => {:controller => 'bills', :action => 'vote_against', :id => @bill.id},
+	:method => :rjs %>
+	
+<% elsif logged_in_user %>
+	<small>You voted <b><%= (logged_in_user.voted_for?(@bill)? 'for' : 'against')%></b> this bill.</small><br />
+	<%= link_to_remote 'Change Vote',
+	:update => 'vote_menu',
+	:url => {:controller => 'bills', :action => 'change_vote', :id => @bill.id},
+	:method => :rjs %>
+
+<% else -%>
+	Please register or login to vote
+<% end -%>

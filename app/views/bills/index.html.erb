@@ -1,0 +1,6 @@
+<h1>Listing <%=@action%> Bills</h1>
+
+<%= will_paginate @bills%>
+
+<%= render :partial => 'bills/bill', :collection => @bills%>
+

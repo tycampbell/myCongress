@@ -1,0 +1,21 @@
+development:
+    ttl: 604800
+    namespace: 'myCongress_development'
+    sessions: false
+    debug: false
+    servers: localhost:11211
+    cache_money: true
+
+test:
+  ttl: 604800
+  namespace: 'myCongress'
+  sessions: false
+  debug: false
+  servers: localhost:11211
+ 
+production:
+  ttl: 604800
+  namespace: 'myCongress_production'
+  sessions: false
+  debug: false
+  servers: localhost:11211

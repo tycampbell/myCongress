@@ -1,0 +1,21 @@
+<h3>Bill Summary</h3>
+<p>
+	Posted by: <%= @summary.user.username %> on <%= @summary.created_at.strftime("%m.%d.%Y %I:%M %p")%>
+</p>
+
+<%= render :partial => 'bills/bill_head', :object => @bill%>
+
+<div id="summary">
+	<p>
+			Summary | 
+			<%= link_to 'Edit', :action => 'edit_archived', :id => @summary.id %> |
+			<%= link_to 'View History', bill_summaries_path(@bill) %>
+			<br />
+			<br />
+			<div id="summary_text">
+				<%= textilize(@summary.text) %>
+			</div>
+	</p>
+</div>
+<br />
+<%= link_to 'Back', bill_path(@bill)%>

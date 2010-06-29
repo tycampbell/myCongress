@@ -1,0 +1,42 @@
+<div id="comment_<%= comment_info.id %>_info">
+	<small>
+		<%= link_to comment_info.user.username, user_path(comment_info.user.id)%> 		
+		| Score: 
+		<%= comment_info.score %>
+	</small>
+	<% if comment_info.can_vote%>
+		<div class="logged_in" style="display:visible">
+			<small>
+				<% if logged_in_user%>
+					<% user_vote = Vote.for_voter(logged_in_user).for_voteable(comment_info).first %>
+					<% if user_vote.nil? %>
+						<%= link_to_remote "upvote",
+						:update => "comment_#{comment_info.id}_info",
+						:url => {:controller => 'comments', :action => 'upvote', :id => comment_info.id},
+						:method => :rjs %>
+						<%= link_to_remote "downvote",
+						:update => "comment_#{comment_info.id}_info",
+						:url => {:controller => 'comments', :action => 'downvote', :id => comment_info.id},
+						:method => :rjs %>
+					<% else %>
+						<% if user_vote.vote %>
+							<b>upvote</b>
+							<%= link_to_remote "downvote",
+							:update => "comment_#{comment_info.id}_info",
+							:url => {:controller => 'comments', :action => 'change_to_downvote', :id => comment_info.id},
+							:method => :rjs %>
+						<% else %>
+							<%= link_to_remote "upvote",
+							:update => "comment_#{comment_info.id}_info",
+							:url => {:controller => 'comments', :action => 'change_to_upvote', :id => comment_info.id},
+							:method => :rjs %>
+							<b>downvote</b>
+						<% end %>
+					<% end %>
+				<%else %>
+					Not logged in
+				<% end %>
+			</small>
+		</div>
+	<% end %>
+</div>

@@ -1,0 +1,18 @@
+<div id="point_<%= point_info.id %>_info">
+	<small>
+		<%= link_to point_info.user.username, user_path(point_info.user.id)%> 		
+		| Score: 
+		<%= point_info.score %>
+		
+		<% if !point_info.bill.finished and logged_in_user and !logged_in_user.voted_on?(point_info)%>
+			<%= link_to_remote "upvote",
+			:update => "point_#{point_info.id}_info",
+			:url => {:controller => 'points', :action => 'upvote', :id => point_info.id},
+			:method => :rjs %>
+			<%= link_to_remote "downvote",
+			:update => "point_#{point_info.id}_info",
+			:url => {:controller => 'points', :action => 'downvote', :id => point_info.id},
+			:method => :rjs %>
+		<% end %>
+	</small>
+</div>

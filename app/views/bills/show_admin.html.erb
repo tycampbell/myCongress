@@ -1,0 +1,27 @@
+<%= render :partial => 'bills/bill_head', :object => @bill%>
+
+<p>
+  <b>Summary:</b>
+  <%= safe_textilize(@bill.summary.text) %>
+</p>
+
+<h1>Results:</h1>
+<table>
+	<tr>
+		<th>Voter</th>
+		<th>Vote</th>
+	</tr>
+	<% @votes.each do |vote| %>
+		<tr>
+			<td><%= vote.voter.username %></td>
+			<td><% if vote.vote? -%>
+					Yes
+				<%else -%>
+					No
+				<%end -%></td>
+			</tr>
+		<% end %>
+</table>
+	
+
+<%=link_to 'Back', :action => 'admin'%>

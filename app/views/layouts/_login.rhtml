@@ -1,0 +1,26 @@
+<div class="logged_in" style:"display:none">
+	<li>Logged in as: <b id="menu_username">my_login</b></li> 
+	<li><%= link_to 'My Profile', edit_user_path(1) %></li> 
+	<li><%= link_to_remote 'Logout',
+	 			:replace => 'sidemenu',
+				:url => {:controller => 'account', :action => 'logout'},
+				:method => :post %></li>
+</div>
+<div class="logged_out">
+	<li>
+	<% form_remote_for :user, :url => {:controller => 'account', :action => 'authenticate'}, :method => :rjs do |f| -%> 		
+		<p>Username:<br /><%= f.text_field :username, :size => 15 %></p> 
+		<p>Password:<br /><%= f.password_field :password, :size => 15 %></p> 
+		<%= submit_tag 'Login' %> or 
+		<%= link_to 'Signup', :controller => 'users', :action => 'new' %>
+	<% end %>
+	</li> 
+</div>
+
+<% if logged_in_user and logged_in_user.has_role?('Administrator') %> 
+	<li><hr size="1" width="90%" align="left"/></li> 
+	<li><b>Admin Options</b></li> 
+	<li><%= link_to 'Administer Users', users_path %></li>
+	<li><%= link_to 'Edit Pages', pages_path %></li>
+	<li><%= link_to 'Edit Bills', :controller => 'bills', :action => 'admin' %></li> 
+<% end %>

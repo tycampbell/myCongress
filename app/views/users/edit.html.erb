@@ -1,0 +1,22 @@
+<h3>Edit your account</h3> 
+
+<p><%= link_to 'Show my profile', user_path(@user) %></p> 
+
+<%= error_messages_for :user %>
+
+<% form_for :user, 
+			:url => user_url(@user),
+			:html => { :method => :put } do |f| -%> 
+	<p>Email:<br /><%= f.text_field :email, :size => 30 %></p> 
+	<p>New Password:<br /><%= f.password_field :password, :size => 30 %></p> 
+	<p>Password Confirmation:<br />
+		<%= f.password_field :password_confirmation, :size => 30 %></p> 	
+	<%= submit_tag 'Save' %>
+<% end -%>
+
+<br />
+<h3> Profile Info </h3>
+<p>
+	<small><i>This information will not be made publicly available and is used only for result analysis</i></small>
+<%= render :partial => 'users/profile'%>
+</p>

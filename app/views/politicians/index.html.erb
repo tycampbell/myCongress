@@ -1,0 +1,24 @@
+<h1>Listing politicians</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Party</th>
+    <th>Position</th>
+  </tr>
+
+<% @politicians.each do |politician| %>
+  <tr>
+    <td><%=h politician.first_name + " " +politician.last_name%></td>
+    <td><%=h politician.party %></td>
+    <td><%=h politician.position %></td>
+    <td><%= link_to 'Show', politician %></td>
+    <td><%= link_to 'Edit', edit_politician_path(politician) %></td>
+    <td><%= link_to 'Destroy', politician, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New politician', new_politician_path %>

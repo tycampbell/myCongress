@@ -1,0 +1,11 @@
+
+	<% if logged_in_user -%>
+		<% form_for :new_comment, 
+		:url => {:action => 'reply', 
+			:bill_id => @bill.id, 
+			:parent_id => reply.id}, 
+		:html => {:method => :post} do |f|%>
+			<%= f.text_area :text, :rows => 3, :cols => 20%><br />
+			<%= submit_tag 'Post Reply'%>
+		<% end -%>
+	<% end -%>

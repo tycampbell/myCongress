@@ -1,0 +1,22 @@
+<ul>
+	<% unless @bill.nil? %>
+		<div id = "vote_menu">
+			<%= render :partial => 'layouts/votemenu', :object => @bill %>
+		</div>
+		<br />
+		<br />
+	<% end %>
+	
+	<div id= "login_menu">
+		<%= render :partial => 'layouts/login'%>
+	</div>
+	<br />
+	<% cache 'top_tag_list', :expire => 1.days do%>
+		<div id="categories">
+			Top Categories<br />
+			<% popular_tags_list.each do |tag| %>
+				<%= link_to tag.name, tag_path(tag.name) %><br />
+			<% end %>
+		</div>
+	<% end %>
+</ul>

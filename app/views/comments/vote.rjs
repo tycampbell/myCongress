@@ -1,0 +1,3 @@
+content = render(:partial => 'comments/comment', :object => @comment)
+page.replace_html("comment_#{@comment.id}", content )
+alert('Debug')

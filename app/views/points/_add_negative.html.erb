@@ -1,0 +1,9 @@
+<% form_for :point, 
+:url => {:controller => 'points',
+	:action => 'create', 
+	:bill_id => add_negative.id,
+	:is_positive => 0},
+:html => {:method => :post} do |f|%>
+	<%= f.text_area :text, :rows => 4, :cols => 30%><br />
+	<%= submit_tag 'Post Negative Point'%>
+<% end -%>

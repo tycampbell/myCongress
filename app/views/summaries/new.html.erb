@@ -1,0 +1,38 @@
+<%= render :partial => 'bills/bill_head', :object => @bill%>
+
+<div id="summary">
+	<% if !@bill.summary_id.nil? %>
+		Summary | 
+		<%= link_to 'Edit', edit_bill_summary_path(@bill)%> |
+		<%= link_to 'View History', bill_summaries_path(@bill) %>
+		<br />
+		<br />
+	<% else -%>
+		Summary |
+		<%= link_to 'Edit', edit_bill_summary_path(@bill)%>
+		<br />
+		<br />
+	<% end %>
+	<% form_for (  :summary, 
+					:url => {:controller => 'summaries', 
+						:action => 'create', 
+						:bill_id => @bill.id,
+						:parent_id => (@summary.nil?)? nil : @summary.id} ) do |f| %>
+				
+		<p><%= f.text_area :text, :rows => 20, :cols => 60 -%></p>
+		
+		<p>
+			
+			Add Tags: (separate with a comma)
+			<% if @summary %>
+				<%= f.text_field :tags, :size => 60, :value => @summary.tag_list.to_s %>
+			<% else %>	
+				<%= f.text_field :tags, :size => 60 %>
+			<% end %>
+		</p>
+		
+		<p>Comment:<br /><%= f.text_field :comment, :size => 60 %></p> 
+		
+		<%= submit_tag 'Submit' %> or <%= link_to 'Cancel', bill_path(@bill) -%>
+	<% end -%>
+</div>

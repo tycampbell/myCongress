@@ -1,0 +1,107 @@
+<%= render :partial => 'bills/bill_head', :object => @bill%>
+
+<div id="summary">
+	<p>
+		<% if !@bill.summary_id.nil? %>
+			Summary | 
+			<%= link_to 'Edit', edit_bill_summary_path(@bill)%> |
+			<%= link_to 'View History', bill_summaries_path(@bill) %>
+			<br />
+			<br />
+			<div id="summary_text">
+				<%= safe_textilize(@bill.summary.text) %>
+			</div>
+			<br />
+		<% else -%>
+			Summary |
+			<%= link_to 'Edit', edit_bill_summary_path(@bill)%> |
+			<br />
+			<br />
+			<div id="summary_text">
+			There is currently no summary for this bill.<br />
+			Click <%= link_to 'Edit', edit_bill_summary_path(@bill)%> to be the first to add a summary!
+			</div>
+			<br />
+		<% end %>
+	</p>
+</div>
+
+<% if @bill.summary %>
+	<h3>Tags</h3> 
+	<ul id="taglist">
+		<% @bill.summary.tags.each do |tag| %>
+			<%= link_to tag.name, tag_path(tag.name)%>
+		<% end %>
+	</ul>
+	<br />
+<% end %>
+
+<h3>Positive Points
+	<% if !@bill.finished %> |
+	<small><%= link_to_remote ('Add', 
+				:url => {   :controller => 'points', 
+							:action => 'request_add_positive', 
+							:bill_id => @bill.id},
+				:update => 'positive_add') %>
+	</small>
+	<% end %>
+</h3>
+<div id="positive_add">
+</div>
+<div class="point" id="positive_points">
+	<%= render :partial => 'bills/point', :collection => @positive %>
+	
+	<% if @pos_more > 0%>
+		<div id="pos_point_load_more">
+			<%= link_to_remote "Load #{@pos_more} More", :url => {:controller => 'bills', :action => 'load_more_positive', :id => @bill.id}, 
+			:update => 'pos_point_load_more' %>
+		</div>
+	<% end %>
+</div>
+<br />
+<h3>Negative Points 
+	<% if !@bill.finished %> |
+		<small><%= link_to_remote 'Add', 
+					:url => {   :controller => 'points', 
+								:action => 'request_add_negative', 
+								:bill_id => @bill.id},
+					:update => 'negative_add'%>	
+		</small>
+	<% end %>
+</h3>
+<div id="negative_add">
+</div>
+<div class="point" id="negative_points">
+	<%= render :partial => 'bills/point', :collection => @negative %>
+	
+	<% if @neg_more > 0  %>
+		<div id="neg_point_load_more">
+			<%= link_to_remote "Load #{@neg_more} More", :url => {:controller => 'bills', :action => 'load_more_negative', :id => @bill.id}, 
+			:update => 'neg_point_load_more' %>
+		</div>
+	<% end %>
+</div>
+
+<% if @bill.finished%>
+	<div id='demo_chart'></div>
+	<%= @demo_chart.render('demo_chart') %>
+	<div id='repu_chart'></div>
+	<%= @repu_chart.render('repu_chart') %>
+	<div id='inde_chart'></div>
+	<%= @inde_chart.render('inde_chart') %>
+	<div id='all_chart'></div>
+	<%= @all_chart.render('all_chart') %>
+	<div id='all_map'></div>
+	<%= @intensity_map.render('all_map') %>
+	
+<%end%>
+
+<br />
+<br />
+<% if @bill.finished %>
+	<%=link_to 'Back', :action => 'finished_bills'%>
+<% elsif @bill.summarized %>
+	<%=link_to 'Back', bills_path%>
+<% else %>
+	<%=link_to 'Back', :action => 'new_bills'%>
+<% end %>

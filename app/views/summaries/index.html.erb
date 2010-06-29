@@ -1,0 +1,18 @@
+<%= render :partial => 'bills/bill_head', :object => @bill%>
+
+<p class="pagination"><strong>
+	<%= will_paginate @summaries %> 		
+</strong></p>
+
+<table>
+	<tr>
+		<th>Date</th>
+		<th>Author</th>
+		<th>Comment</th>
+	</tr>
+	<%= render :partial => 'summaries/summary', :collection => @summaries %>
+</table>
+<br />
+<%= link_to 'Back', bill_path(@bill)%> 
+		
+	

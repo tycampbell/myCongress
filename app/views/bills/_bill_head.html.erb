@@ -1,0 +1,4 @@
+<h3><%=@bill.name%></h3>
+
+Bill: <%= link_to '#'+@bill.number.to_s, bill_path(@bill)%> | <%= link_to 'Discussion', bill_comments_path(@bill) %> <br />
+<%=@bill.created_at.strftime("%m.%d.%Y")%>

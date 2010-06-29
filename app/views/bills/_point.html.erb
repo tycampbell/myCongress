@@ -1,0 +1,11 @@
+<div id="point_<%= point.id %>">
+	<div id="point_<%= point.id %>_text">
+		<p>
+	  		<%= point.text%> 
+		</p>
+  	</div>
+	<%= render :partial => 'comments/comment_info', :object => point.comment -%>
+	<div id="logged_in"><small>
+	<%= link_to 'reply', bill_comments_path(@bill)+"#comment_#{point.comment_id}"%>
+	</small></div>
+</div>

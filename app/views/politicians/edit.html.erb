@@ -1,0 +1,36 @@
+<h1>Editing politician</h1>
+
+<% form_for(@politician) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :first_name %><br />
+    <%= f.text_field :first_name %>
+  </p>
+  <p>
+    <%= f.label :last_name %><br />
+    <%= f.text_field :last_name %>
+  </p>
+  <p>
+    <%= f.label :party %><br />
+    <%= f.text_field :party %>
+  </p>
+  <p>
+    <%= f.label :position %><br />
+    <%= f.text_field :position %>
+  </p>
+	<p>
+		<%= f.label :state%><br />
+		<%= f.text_field :state%>
+	</p>
+	<p>
+		<%= f.label :district%><br />
+		<%= f.text_field :district%>
+	</p>
+  <p>
+    <%= f.submit 'Update' %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @politician %> |
+<%= link_to 'Back', politicians_path %>

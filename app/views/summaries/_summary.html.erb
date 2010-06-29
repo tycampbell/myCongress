@@ -1,0 +1,5 @@
+<tr class="<%= cycle('odd', 'even') -%>"> 
+	<td><%= link_to summary.created_at.strftime("%m.%d.%Y %I:%M %p"), :action => 'show', :id => summary.id%></td>
+	<td><%= link_to summary.user.username, user_path(summary.user.id) %></td>
+	<td><%= summary.comment %></td>
+</tr>

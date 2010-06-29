@@ -1,0 +1,24 @@
+<ul> 
+	<li><%= link_to 'Home', index_url %></li> 
+	
+	<li><hr size="1" width="90%" align="left"/></li>
+	
+	<div class="logged_in" style:"display:none">
+		<li>Hello, <b id="menu_username"> my_login </b></li> 
+		<li><%= link_to 'My Profile', edit_user_path(1) %></li> 
+		<li><%= link_to 'Logout', 
+					{:controller => 'account', :action => 'logout'},
+					:method => :post %></li>
+	</div>
+	<div class="logged_out">
+		<li><%= link_to 'Signup', :controller => 'users', :action => 'new' %></li> 
+		<li><%= link_to 'Login', :controller => 'account', :action => 'login' %></li>
+	</div>
+	
+	<% if logged_in_user and logged_in_user.has_role?('administrator') %> 
+		<li><hr size="1" width="90%" align="left"/></li> 
+		<li><b>Admin Options</b></li> 
+		<li><%= link_to 'Administer Users', users_path %></li>
+		<li><%= link_to 'Edit Pages', pages_path %></li> 
+	<% end %>
+</ul>

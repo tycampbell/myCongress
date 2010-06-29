@@ -1,0 +1,22 @@
+<p>
+	<h3><%=bill.name%></h3>
+	Bill: #<%=bill.number%> | <%= bill.created_at.strftime("%m.%d.%Y")%> <br />
+	<% if bill.summary %>
+		<small>Tags:
+			<% size = 50 %>
+			<% remaining = 0%>
+			<% bill.summary.tags.each do |tag|%>
+				<% unless size < 0  %>
+					<%= link_to tag.name, tag_path(tag.name)%> | 
+					<% size -= tag.name.length %>
+				<% else %>
+				<% remaining += 1%>
+				<% end %>
+			<% end %>
+			<%= "<#{remaining} more>" if remaining > 0%>
+		</small> 
+	<% end %>
+	<br />
+	<%= safe_textilize(truncate(bill.summary.text,200,'...')) if bill.summary %>
+	<%= link_to 'read more >', bill_path(bill)%><br />
+</p>

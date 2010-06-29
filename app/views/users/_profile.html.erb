@@ -1,0 +1,19 @@
+<%= error_messages_for :profile %>
+
+<% form_for(:profile, @profile,  :url => {:controller => 'users', :action => 'submit_profile', :id => @user.id}) do |f| %>
+	<p>City:<br />
+		<%= f.text_field :city %>
+	</p>
+	<p>State: <%= f.text_field :state, :size => 2 %>
+		Zip:<%= f.text_field :zip, :size => 5 %>
+	</p>
+	<p>Political Party: | Political View: <br />
+		<%= f.select( 
+		:party, [['',0],['Democrat',1],['Republican',2],['Independent',3]])%>
+		 | 
+		<%= f.select(:view, [['',0],['Conservative',1],['Moderate',2],['Liberal',3]]) %>
+	</p>
+	<br />
+	<p><%= submit_tag %></p>
+	
+<% end -%>

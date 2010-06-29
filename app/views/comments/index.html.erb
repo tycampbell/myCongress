@@ -1,0 +1,23 @@
+<%# cache "#{@bill.id}_comments" do %>
+
+<%= render :partial => 'bills/bill_head', :object => @bill%>
+
+
+<% if !@bill.finished and logged_in_user %>
+	<% form_for :comment, :url => bill_comments_path(@bill), :html => {:method => :post} do |f| %>
+		<%= f.text_area :text, :rows => 5, :cols => 40 %><br />
+		<%= submit_tag 'Post Comment'%>
+	<% end %>
+<% end %>
+
+<% unless @comments.empty? %>
+		<% @comments.each do |comment| -%>
+			<div id="comments">
+			  <%= render :partial => 'comments/comment', :object => comment %>
+			</div>
+		<% end -%>
+<% else %>
+	There are currently no discussions for this bill. <br />
+<% end %>
+
+<%# end %>
