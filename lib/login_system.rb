@@ -29,7 +29,7 @@ module LoginSystem
   def check_role(role) 
     unless is_logged_in? && @logged_in_user.has_role?(role)
       flash[:error] = "You do not have the permission to do that."
-      redirect_to :controller => 'account', :action => 'login' 
+      redirect_to '/'
     end
   end
   
@@ -37,10 +37,27 @@ module LoginSystem
     check_role('Administrator')
   end
   
-  def login_required 
+  def check_moderator_role
+    check_role('Moderator')
+  end
+  
+  def check_politician_role
+    check_role('Politician')
+  end
+  
+  def login_required(location = :index)
     unless is_logged_in?
       flash[:error] = "You must be logged in to do that."
-      redirect_to :controller => 'account', :action => 'login' 
+      respond_to do |format|
+        format.html {
+                  if params[:bill_id]
+                    redirect_to bill_path(params[:bill_id])
+                  else
+                    redirect_to '/'
+                  end}
+        format.js  {}
+        format.xml  { render :xml => @bills }
+      end
     end
   end
   

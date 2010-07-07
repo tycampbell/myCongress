@@ -1,3 +1,4 @@
+<% unless point.comment.deleted %>
 <div id="point_<%= point.id %>">
 	<div id="point_<%= point.id %>_text">
 		<p>
@@ -9,3 +10,4 @@
 	<%= link_to 'reply', bill_comments_path(@bill)+"#comment_#{point.comment_id}"%>
 	</small></div>
 </div>
+<% end %>

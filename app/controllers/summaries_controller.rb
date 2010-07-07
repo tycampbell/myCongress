@@ -1,6 +1,7 @@
 class SummariesController < ApplicationController
   
   #before_filter :check_if_bill_is_finished, :only => [:new, :edit, :edit_archived]
+  before_filter :login_required, :except => [:index, :show]
   
   def index
     #This is the version history action!
@@ -109,8 +110,8 @@ class SummariesController < ApplicationController
         #if the check is not the parent, add a warning
         warning = Warning.new(:user_id => summary.user_id,
                               :reported_by_id => logged_in_user.id,
-                              :type_id => summary.id)
-        warning.type = 'summary'
+                              :type_id => summary.id,
+                              :type_class => 'summary')
         warning.revert_level = depth
         
         begin

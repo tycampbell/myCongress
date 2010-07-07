@@ -4,7 +4,7 @@
 
 
 <% if !@bill.finished and logged_in_user %>
-	<% form_for :comment, :url => bill_comments_path(@bill), :html => {:method => :post} do |f| %>
+	<% form_for :new_comment, :url => bill_comments_path(@bill), :html => {:method => :post} do |f| %>
 		<%= f.text_area :text, :rows => 5, :cols => 40 %><br />
 		<%= submit_tag 'Post Comment'%>
 	<% end %>

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100629175832) do
+ActiveRecord::Schema.define(:version => 20100630145500) do
 
   create_table "bills", :force => true do |t|
     t.string   "name",                             :null => false
@@ -38,6 +38,8 @@ ActiveRecord::Schema.define(:version => 20100629175832) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "can_vote",    :default => true
+    t.integer  "warnings",    :default => 0,     :null => false
+    t.boolean  "deleted",     :default => false, :null => false
   end
 
   create_table "pages", :force => true do |t|
@@ -61,6 +63,7 @@ ActiveRecord::Schema.define(:version => 20100629175832) do
   end
 
   create_table "politicians", :force => true do |t|
+    t.integer  "user_id",    :null => false
     t.string   "first_name"
     t.string   "last_name"
     t.string   "party"

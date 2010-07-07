@@ -9,7 +9,7 @@
 			<br />
 			<br />
 			<div id="summary_text">
-				<%= safe_textilize(@bill.summary.text) %>
+				<%= @bill.summary.text %>
 			</div>
 			<br />
 		<% else -%>
@@ -27,7 +27,7 @@
 </div>
 
 <% if @bill.summary %>
-	<h3>Tags</h3> 
+	<h3>Issues</h3> 
 	<ul id="taglist">
 		<% @bill.summary.tags.each do |tag| %>
 			<%= link_to tag.name, tag_path(tag.name)%>
@@ -83,15 +83,15 @@
 </div>
 
 <% if @bill.finished%>
-	<div id='demo_chart'></div>
+	<span id='demo_chart'></span>
 	<%= @demo_chart.render('demo_chart') %>
-	<div id='repu_chart'></div>
+	<span id='repu_chart'></span>
 	<%= @repu_chart.render('repu_chart') %>
-	<div id='inde_chart'></div>
+	<span id='inde_chart'></span>
 	<%= @inde_chart.render('inde_chart') %>
-	<div id='all_chart'></div>
+	<span id='all_chart'></span>
 	<%= @all_chart.render('all_chart') %>
-	<div id='all_map'></div>
+	<span id='all_map'></span>
 	<%= @intensity_map.render('all_map') %>
 	
 <%end%>

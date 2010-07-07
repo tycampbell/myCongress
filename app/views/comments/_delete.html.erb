@@ -1,0 +1,5 @@
+Are you sure? <%= link_to_remote('Yes',
+					:update => "comment_#{delete.id}",
+					:url => {:action => 'delete',
+								:id => delete.id,
+								:bill_id => @bill} )%>

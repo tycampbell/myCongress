@@ -1,3 +1,5 @@
+<%= javascript_include_tag :ckeditor %>
+
 <%= render :partial => 'bills/bill_head', :object => @bill%>
 
 <div id="summary">
@@ -19,11 +21,11 @@
 						:bill_id => @bill.id,
 						:parent_id => (@summary.nil?)? nil : @summary.id} ) do |f| %>
 				
-		<p><%= f.text_area :text, :rows => 20, :cols => 60 -%></p>
+		<p><%= f.cktext_area :text, :toolbar => 'mycongress' -%></p>
 		
 		<p>
 			
-			Add Tags: (separate with a comma)
+			Add Issues: (separate with a comma)
 			<% if @summary %>
 				<%= f.text_field :tags, :size => 60, :value => @summary.tag_list.to_s %>
 			<% else %>	

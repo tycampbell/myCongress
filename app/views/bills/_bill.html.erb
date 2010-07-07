@@ -2,7 +2,7 @@
 	<h3><%=bill.name%></h3>
 	Bill: #<%=bill.number%> | <%= bill.created_at.strftime("%m.%d.%Y")%> <br />
 	<% if bill.summary %>
-		<small>Tags:
+		<small>Issues:
 			<% size = 50 %>
 			<% remaining = 0%>
 			<% bill.summary.tags.each do |tag|%>
@@ -17,6 +17,7 @@
 		</small> 
 	<% end %>
 	<br />
-	<%= safe_textilize(truncate(bill.summary.text,200,'...')) if bill.summary %>
+	<%# Grab the first 500 characters, then strip out the html tags and then put 200%>
+	<%= truncate(bill.summary.text[0..500].gsub(/<\/?[^>]*>/,  ""),200,'...') if bill.summary %>
 	<%= link_to 'read more >', bill_path(bill)%><br />
 </p>

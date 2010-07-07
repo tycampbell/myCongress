@@ -1,5 +1,7 @@
 class PointsController < ApplicationController
 
+  before_filter :login_required, :only => [:create, :upvote, :downvote]
+
   def request_add_positive
     #sends the partial (for the form) that lets the user add a point
     @bill = Bill.find(params[:bill_id])

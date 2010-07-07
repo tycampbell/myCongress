@@ -35,13 +35,13 @@ function handle_cached_user() {
 		    }
 			for (var i = 0; i < logged_out.length; i++)
 			    {
-			        logged_out[i].style.display = 'block';        
+			        logged_out[i].style.display = 'inline';        
 			    }
     } else {
 		//User logged in
 	   for (var i = 0; i < logged_in.length; i++)
 	    {
-	        logged_in[i].style.display = 'block';        
+	        logged_in[i].style.display = 'inline';        
 	    }
 		for (var i = 0; i < logged_out.length; i++)
 		    {

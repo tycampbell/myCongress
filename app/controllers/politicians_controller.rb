@@ -1,4 +1,6 @@
 class PoliticiansController < ApplicationController
+  
+  before_filter :check_administrator_role, :except => [:index, :show, :show_by_username]
   # GET /politicians
   # GET /politicians.xml
   def index

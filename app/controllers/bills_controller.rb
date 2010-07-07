@@ -1,5 +1,8 @@
 class BillsController < ApplicationController
   
+  before_filter :check_administrator_role, :only => [:destroy, :update, :admin, :show_admin]
+  before_filter :bill_login_required, :only => [:vote_for, :vote_against, :change_vote]
+  
   include BillsHelper
   # GET /bills
   # GET /bills.xml
@@ -124,48 +127,9 @@ class BillsController < ApplicationController
     #Results
     if @bill.finished
       
-      #See if the results are cached
-      @demo_chart = Rails.cache.read("#{@bill.id}_demo_chart")
-      @repu_chart = Rails.cache.read("#{@bill.id}_repu_chart")
-      @inde_chart = Rails.cache.read("#{@bill.id}_inde_chart")
-      @all_chart = Rails.cache.read("#{@bill.id}_all_chart")
-      @intensity_map = Rails.cache.read("#{@bill.id}_intensity_map")
-      
-      if @all_chart.nil?
-      
-        @voters = @bill.voters_who_voted
-        @democrats = []
-        @republicans = []
-        @independents = []
-      
-        @voters.each do |voter|
-          party = voter.profile.party if voter.profile
-          if party == 1 #Democrat
-            @democrats << voter.voted_for?(@bill)
-          elsif party == 2 #republican
-            @republicans << voter.voted_for?(@bill)
-          else # 0 or 3
-            @independents << voter.voted_for?(@bill)
-          end
-        end
-      
-        @demo_chart = vote_break_down_chart(@democrats,'Democrat Votes')
-        @repu_chart = vote_break_down_chart(@republicans,'Republican Votes')
-        @inde_chart = vote_break_down_chart(@independents,'Independent Votes')
-        @all_chart = vote_break_down_chart(@democrats+@republicans+@independents,'All Votes')
-      
-        @intensity_map = vote_intensity_map(@voters, 'All Votes', '000000', nil, 1)
-        
-        Rails.cache.write("#{@bill.id}_demo_chart",@demo_chart)
-        Rails.cache.write("#{@bill.id}_repu_chart",@repu_chart)
-        Rails.cache.write("#{@bill.id}_inde_chart",@inde_chart)
-        Rails.cache.write("#{@bill.id}_all_chart",@all_chart)
-        Rails.cache.write("#{@bill.id}_intensity_map",@intensity_map)
-        
-      end
-        
-        
-      
+      #Private method:
+      #Creates the charts to display on the finished bill page
+      create_and_show_charts
       
     end
 
@@ -331,6 +295,15 @@ class BillsController < ApplicationController
       
   end
   
+  #To update the votemenu correctly, the bill needed it's own special validation method
+  def bill_login_required
+    unless is_logged_in?
+      @bill = Bill.find(params[:id])
+      flash[:error] = "You must be logged in to do that."
+      render :partial => 'layouts/votemenu', :object => @bill
+    end
+  end
+  
   #These loading methods are terribly inefficient!
   #FIX FIX FIX!
   
@@ -378,78 +351,6 @@ class BillsController < ApplicationController
     render :partial => 'bills/point', :collection => @negative
   end
   
-  #Show Results Page Graphs:
-  
-  def vote_break_down_chart(group, title)
-    
-    group_true = group.find_all{|vote| vote == true}.size
-    
-  
-    chart = GoogleVisualr::PieChart.new
-    chart.add_column('string', 'Vote')
-    chart.add_column('number','# of votes')
-    
-    chart.add_rows(2)
-    chart.set_value(0,0,'Votes For')
-    chart.set_value(0,1,group_true)
-    
-    chart.set_value(1,0,'Votes Against')
-    chart.set_value(1,1,group.size-group_true)
-    
-    chart.width = 200
-    chart.height = 200
-    chart.title = title
-    
-    return chart
-    
-  end
-  
-  def vote_intensity_map(group, title, color, chart, column)
-    
-    @state_abbr = get_state_abbr_array
-    
-    if chart.nil?
-      chart = GoogleVisualr::IntensityMap.new
-      chart.add_column('string','','state')
-      chart.add_column('number',title, 'a')
-      chart.add_rows(50)
-      chart.region = 'usa'
-      chart.height = 220
-      chart.width = 440
-      
-      inc = 0
-      @state_abbr.each do |abbr|
-        chart.set_value(inc, 0, abbr)
-        inc += 1
-      end
-    end
-    group_in_state = {}
-    #state_abbr is in the bill helper
-    @state_abbr.each do |key|
-      #CURRENTLY INEFFICIENT, MAKE FASTER
-      voters = group.find_all{|g| g.profile.state == key if g.profile }
-      count = 0
-      voters.each do |voter|
-        if voter.voted_for?(@bill)
-          count += 1
-        else
-          count -= 1
-        end
-      end
-      group_in_state.merge!({key => count})
-      
-    end
-    
-    group_in_state.each do |key,value|
-      chart.set_value(@state_abbr.index(key), column, value)
-      inc += 1
-    end
-    
-    return chart
-    
-    
-  end
-  
   #ADMIN STUFF---------
   
   def admin
@@ -468,6 +369,130 @@ class BillsController < ApplicationController
       format.xml  { render :xml => @bill }
     end
   end
+  
+  
+  #-------------PRIVATE
+  
+  private
+  
+  #Show Results Page Graphs:
+
+  #Chart creation methods:
+  #This is currently more a proof of concept
+  
+  def create_and_show_charts
+    #See if the results are cached
+    @demo_chart = Rails.cache.read("#{@bill.id}_demo_chart")
+    @repu_chart = Rails.cache.read("#{@bill.id}_repu_chart")
+    @inde_chart = Rails.cache.read("#{@bill.id}_inde_chart")
+    @all_chart = Rails.cache.read("#{@bill.id}_all_chart")
+    @intensity_map = Rails.cache.read("#{@bill.id}_intensity_map")
+    
+    if @all_chart.nil? #Basically, if ANY are nil, but if one isn't cached most likely none are
+    
+      @voters = @bill.voters_who_voted
+      @democrats = []
+      @republicans = []
+      @independents = []
+    
+      @voters.each do |voter|
+        party = voter.profile.party if voter.profile
+        if party == 1 #Democrat
+          @democrats << voter.voted_for?(@bill)
+        elsif party == 2 #republican
+          @republicans << voter.voted_for?(@bill)
+        else # 0 or 3
+          @independents << voter.voted_for?(@bill)
+        end
+      end
+    
+      @demo_chart = vote_break_down_chart(@democrats,'Democrat Votes')
+      @repu_chart = vote_break_down_chart(@republicans,'Republican Votes')
+      @inde_chart = vote_break_down_chart(@independents,'Independent Votes')
+      @all_chart = vote_break_down_chart(@democrats+@republicans+@independents,'All Votes')
+    
+      @intensity_map = vote_intensity_map(@voters, 'All Votes', '000000', nil, 1)
+      
+      Rails.cache.write("#{@bill.id}_demo_chart",@demo_chart)
+      Rails.cache.write("#{@bill.id}_repu_chart",@repu_chart)
+      Rails.cache.write("#{@bill.id}_inde_chart",@inde_chart)
+      Rails.cache.write("#{@bill.id}_all_chart",@all_chart)
+      Rails.cache.write("#{@bill.id}_intensity_map",@intensity_map)
+      
+    end
+  end
+
+   def vote_break_down_chart(group, title)
+
+     group_true = group.find_all{|vote| vote == true}.size
+
+
+     chart = GoogleVisualr::PieChart.new
+     chart.add_column('string', 'Vote')
+     chart.add_column('number','# of votes')
+
+     chart.add_rows(2)
+     chart.set_value(0,0,'Votes For')
+     chart.set_value(0,1,group_true)
+
+     chart.set_value(1,0,'Votes Against')
+     chart.set_value(1,1,group.size-group_true)
+
+     chart.width = 200
+     chart.height = 200
+     chart.title = title
+
+     return chart
+
+   end
+
+   def vote_intensity_map(group, title, color, chart, column)
+
+     @state_abbr = get_state_abbr_array
+
+     if chart.nil?
+       chart = GoogleVisualr::IntensityMap.new
+       chart.add_column('string','','state')
+       chart.add_column('number',title, 'a')
+       chart.add_rows(50)
+       chart.region = 'usa'
+       chart.height = 220
+       chart.width = 440
+
+       inc = 0
+       @state_abbr.each do |abbr|
+         chart.set_value(inc, 0, abbr)
+         inc += 1
+       end
+     end
+     group_in_state = {}
+     #state_abbr is in the bill helper
+     @state_abbr.each do |key|
+       #CURRENTLY INEFFICIENT, MAKE FASTER
+       voters = group.find_all{|g| g.profile.state == key if g.profile }
+       count = 0
+       voters.each do |voter|
+         if voter.voted_for?(@bill)
+           count += 1
+         else
+           count -= 1
+         end
+       end
+       group_in_state.merge!({key => count})
+
+     end
+
+     group_in_state.each do |key,value|
+       chart.set_value(@state_abbr.index(key), column, value)
+       inc += 1
+     end
+
+     return chart
+
+
+   end
+  
+  
   
   def update_bills_activity
     @bills = @bills || Bill.all

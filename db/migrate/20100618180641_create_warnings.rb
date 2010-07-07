@@ -4,7 +4,7 @@ class CreateWarnings < ActiveRecord::Migration
       t.integer :user_id
       t.integer :reported_by_id
       t.integer :type_id
-      t.string :type
+      t.string :type_class
       t.integer :revert_level
       t.timestamps
     end

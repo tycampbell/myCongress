@@ -1,6 +1,8 @@
 class CommentsController < ApplicationController
   
-  after_filter :rebuild_cache, :only => [:create,:reply,:upvote,:downvote,:change_to_upvote,:change_to_downvote]
+  #after_filter :rebuild_cache, :only => [:create,:reply,:upvote,:downvote,:change_to_upvote,:change_to_downvote]
+  before_filter :check_moderator_role, :only => [:delete]
+  before_filter :comment_login_required, :except => [:index]
   #caches_action :index
   
   def index
@@ -115,6 +117,13 @@ class CommentsController < ApplicationController
 
      render :partial => 'comments/comment_info', :object => @comment
   end
+  def comment_login_required
+    unless is_logged_in?
+      @comment = Comment.find(params[:id])
+      flash[:error] = "You must be logged in to do that."
+      render :text => 'Please Login or Register'
+    end
+  end
   
   #
   ## - Report methods
@@ -131,20 +140,48 @@ class CommentsController < ApplicationController
     
     warning = Warning.new(:user_id => @comment.user_id,
                           :reported_by_id => logged_in_user.id,
-                          :type_id => @comment.id)
-              
-    warning.type = 'comment' #can't put this in new for some reason?
+                          :type => @comment,
+                          :type_class => 'comment')
     warning.save
+    
+    @comment.warnings += 1
+    @comment.save
     
     render :partial => 'comments/reported'
     
     #If they try to report the same thing, we have to rescue it
-    #Because the database will through an error
+    #Because the database will throw an error
+    #Users can't report the same thing twice!
     #This is working as intended
-    rescue
+    #rescue
     
-    render :partial => 'comments/reported'
+   # render :partial => 'comments/reported'
     
+  end
+  
+  def request_delete
+    @comment =  Comment.find(params[:id])
+    @bill = params[:bill_id]
+    
+    render :partial => 'comments/delete', :object => @comment
+  end
+  
+  def delete
+    
+    #Comments aren't destroyed, merely an attribute is updated that makes
+    #the list not show the user or text of the comment
+    #This preserves the tree structure
+    
+    @comment = Comment.find(params[:id])
+    @bill = Bill.find(params[:bill_id])
+    
+    if @comment.update_attribute(:deleted, true)
+      flash[:notice] = "Comment successfully deleted"
+      render :partial => 'comments/comment', :object => @comment
+    else
+      flash[:notice] = "There was an error deleting the comment"
+      render :partial => 'comments/comment', :object => @comment
+    end
   end
   
   private

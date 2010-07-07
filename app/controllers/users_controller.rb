@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   
-  before_filter :check_administrator_role, :only => [:index, :destroy, :enable]
+  before_filter :check_administrator_role, :only => [:index, :destroy, :enable, :promote_to_admin, :promote_to_moderator]
   
   # GET /users
   # GET /users.xml
@@ -138,6 +138,35 @@ class UsersController < ApplicationController
     else
       flash[:notice] = "There was an error updating your profile"
       render :action => 'edit'
+    end
+  end
+  
+  def promote_to_moderator
+    @user = User.find(params[:id])
+    @user.add_role('Moderator')
+    if @user.save
+      flash[:notice] = "User successfully made Moderator"
+    else
+      flash[:error] = "There was a problem promoting this user."
+    end
+    respond_to do |format|
+        format.html { redirect_to(users_url) }
+        format.xml  { head :ok }
+    end
+  end
+  
+  def promote_to_admin
+    @user = User.find(params[:id])
+    @user.add_role('Administrator')
+    @user.add_role('Moderator')
+    if @user.save
+      flash[:notice] = "User successfully made an Administrator"
+    else
+      flash[:error] = "There was a problem promoting this user."
+    end
+    respond_to do |format|
+        format.html { redirect_to(users_url) }
+        format.xml  { head :ok }
     end
   end
 end

@@ -9,36 +9,60 @@
 <div class=<%= type %> id="comment_<%= comment.id %>">
   	<div id="comment_<%= comment.id %>_text">
 		<p>
-	  		<% if type =='point_comment'%>
-			<b><%= link_to 'Point', bill_path(comment.bill_id)+"#point_#{comment.point_id}"%>: </b>
+			<% unless comment.deleted %>
+	  			<% if type =='point_comment'%>
+				<b><%= link_to 'Point', bill_path(comment.bill_id)+"#point_#{comment.point_id}"%>: </b>
+				<% end %>
+				<%= comment.text %>
+			<% else %>
+				[deleted]
 			<% end %>
-			<%= comment.text %> 
 		</p>
   	</div>
 
 	<div class="comment_footer">
-		<%= render :partial => 'comments/comment_info', :object => comment -%>
+		<% unless comment.deleted %>
+			<%= render :partial => 'comments/comment_info', :object => comment -%>
 		<small>
 		posted <%= time_ago_in_words(comment.created_at)%> ago
 		
-		<div id = "comment_<%= comment.id %>_report" class="logged_in" style="display:none">
+		<span id = "comment_<%= comment.id %>_report" class="logged_in" style="display:none">
 				<%= link_to_remote('report',
 									:update => "comment_#{comment.id}_report",
 									:url => {:action => 'request_report',
 											:id => comment.id} 
 									
 											) %>
-		</div>
+		</span>
+		<span id = "comment_<%= comment.id%>_delete">
+			<% if is_logged_in? and logged_in_user.has_role?('Moderator') %>
+				<%= "(#{comment.warnings} warnings)" if comment.warnings > 0%>
+				<%= link_to_remote('delete',
+									:update => "comment_#{comment.id}_delete",
+									:url => {:action => 'request_delete',
+											:id => comment.id, 
+											:bill_id => @bill.id}
+											) %>
+			<% end %>
+		</span>
 		
+		</small>
+		<% else %>
+			<small>
+				[deleted]
+			</small>
+		<% end %>
+		
+		<small>
 		<% if comment.can_vote %>
-			<div id="logged_in" class="logged_in" style="display:none">
+			<span id="logged_in" class="logged_in" style="display:none">
 			<%= link_to_remote ('reply', 
 				:update => "comment_#{comment.id}_reply",
 				:url => { 	:action => 'request_reply', 
 							:id => comment.id,
 							:bill_id => @bill.id })
 				  %>
-			</div>
+			</span>
 		<% end %>
 		</small>
 	</div>

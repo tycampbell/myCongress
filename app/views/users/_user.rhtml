@@ -1,6 +1,6 @@
 <tr class="<%= cycle('odd', 'even') -%>"> 
 	<td><%= link_to user.username, "user/#{user.username}" -%></td> 
-	<td><%= user.email -%></td> 
+	<td><small><%= user.email -%></small></td> 
 	<td><%= user.enabled ? 'yes' : 'no' -%> 
 	<% unless user == logged_in_user -%>
 		<% if user.enabled -%> 
@@ -10,5 +10,10 @@
 		<% end -%> 
 	<% end -%> 
 	</td>
-	<td><%= user.roles%></td>
+	<td><small><% user.roles.each do |role| %>
+		<%= role %><br />
+		<%end%></small>
+	</td>
+	<td><%= link_to('Mod', {:action => 'promote_to_moderator', :id => user.id})%></td>
+	<td><%= link_to('Admin', {:action => 'promote_to_admin', :id => user.id})%></td>
 </tr>
